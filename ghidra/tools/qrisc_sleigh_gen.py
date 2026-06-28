@@ -1,32 +1,26 @@
 #!/usr/bin/env python3
-"""
-qrisc_sleigh_gen.py -- generate a Ghidra SLEIGH module for the Adreno QRisc
-(afuc) command-processor ISA, from the standalone decode tables produced by
-gen/qrisc_isa_gen.py (common/qrisc_isa_tables.py), which in turn come from
-Mesa's qrisc.xml (pinned commit 4bf8fd5...).
+"""Generate the Ghidra SLEIGH module for QRisc from common/qrisc_isa_tables.py.
 
 Emits, under ghidra/Ghidra/Processors/QRisc/data/languages/:
-  - qrisc.sinc       (core: spaces, registers, token+fields, attaches, pcodeops,
-                      operand sub-tables, branch-target operands)
-  - qrisc_gen6.sinc  (a6xx instruction constructors)
-  - qrisc_gen7.sinc  (a7xx instruction constructors; a8xx reuses these)
+  qrisc.sinc        core: spaces, registers, token+fields, attaches,
+                    pcodeops, operand sub-tables, branch-target operands
+  qrisc_gen6.sinc   a6xx instruction constructors
+  qrisc_gen7.sinc   a7xx instruction constructors (a8xx reuses these)
 
-The .slaspec / .ldefs / .pspec / .cspec files are hand-written (committed) and
-@include the generated .sinc files.
+The .slaspec / .ldefs / .pspec / .cspec are hand-written and @include the
+generated .sinc files.
 
-Design notes (see ghidra/VALIDATION.md for the full rationale):
-  * Code space is byte-addressed, 4 bytes/insn. Word offsets in the ISA are
-    scaled x4. Image is expected mapped at address 0 (word i -> byte i*4).
-  * GPRs r00..r19, sp(0x1a), lr(0x1b). $00 is a real register (the firmware
-    keeps it 0 by convention; not modelled as a hard constant).
-  * Special queue/reg pseudo-registers (rem,data,memdata,regdata,addr,usraddr)
-    are VOLATILE registers, so reads/writes survive decompiler optimization and
-    read like memory-mapped FIFO/registers.
-  * cread/cwrite/sread/swrite/load/store -> CALLOTHER pcodeops (creg/sreg/mem).
-  * Branch delay slots -> SLEIGH delayslot(1). call/bl push return; ret/sret ->
-    return; jumpr/waitin -> computed goto.
-  * Modifiers (rep)/(xmov)/(peek)/(sds): bits left don't-care in v1 (decode is
-    unaffected); preincrement '!' is shown. Tracked in VALIDATION.md.
+Design (see ghidra/VALIDATION.md):
+  - Code space is byte-addressed, 4 bytes/insn. Word offsets in the ISA are
+    scaled x4. Image mapped at address 0 (word i -> byte i*4).
+  - GPRs r00..r19, sp(0x1a), lr(0x1b). $00 is a real register kept 0 by
+    convention, not modelled as a hard constant.
+  - Special queue/reg pseudo-regs (rem, data, memdata, regdata, addr,
+    usraddr) are volatile, so reads/writes survive decompiler optimization.
+  - cread/cwrite/sread/swrite/load/store -> CALLOTHER pcodeops.
+  - Branch delay slots -> SLEIGH delayslot(1). call/bl push return; ret/sret
+    return; jumpr/waitin are computed gotos.
+  - (rep)/(xmov)/(peek)/(sds) modifier bits left don't-care in v1.
 """
 
 import os

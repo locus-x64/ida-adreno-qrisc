@@ -1,15 +1,12 @@
-"""
-qrisc_pm4.py -- Adreno PM4 type-7 packet opcode -> name database.
+"""Adreno PM4 type-7 packet opcode -> name DB.
 
-Parses Mesa's `adreno_pm4.xml` (enum `adreno_pm4_type3_packets`, varset="chip")
-into a CP-opcode -> name map, honouring per-generation `variants=` gating so
-a8xx-only packets (e.g. CP_BARRIER=0x59, CP_MEMORY_MAP_UPDATE=0x58) are included
-for gen 8. Used by the loader / bootstrap helper to name packet handlers.
+The runtime uses db(), which prefers the baked PM4_PACKETS table in
+qrisc_isa_tables and falls back to parsing Mesa's adreno_pm4.xml (only at
+generation time, when third_party/mesa is checked out). Honours per-
+generation `variants=` gating so a8xx-only packets (e.g. CP_BARRIER=0x59,
+CP_MEMORY_MAP_UPDATE=0x58) resolve only at gen 8.
 
-Stdlib only. Default XML path is the pinned Mesa tree; pass an override path to
-`load()` for other trees.
-
-Generations are integers: 5 (a5xx) .. 8 (a8xx). The `chip` enum maps AnXX -> n.
+Generations are 5 (a5xx) .. 8 (a8xx). The `chip` enum maps AnXX -> n.
 
 Variant string grammar (from rnn):
     ""            -> all generations

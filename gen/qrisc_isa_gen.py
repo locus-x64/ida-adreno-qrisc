@@ -1,16 +1,11 @@
 #!/usr/bin/env python3
-"""
-qrisc_isa_gen.py -- generate standalone QRisc (afuc) decode tables for the
-IDA processor module and the Ghidra SLEIGH skeleton, from Mesa's qrisc.xml.
+"""Generate standalone QRisc (afuc) decode tables from Mesa's qrisc.xml.
 
-Ground truth: src/freedreno/qrisc/qrisc.xml (isaspec). We reuse Mesa's own
-parser (src/compiler/isaspec/isa.py) at *generation* time to resolve the
-`extends` inheritance chains, <gen> gates, fields, overrides and display
-templates -- then emit fully-resolved, plain-data Python tables so the runtime
-decoder (which runs inside IDA, with no Mesa available) needs zero dependencies.
+Reuses Mesa's `src/compiler/isaspec/isa.py` at generation time to resolve
+`extends`, `<gen>` gates, fields, overrides, and display templates, then
+emits plain-data Python tables. Runtime (IDA, Ghidra) needs no Mesa.
 
 Pinned Mesa commit: 4bf8fd5121122abd87aafb31e43bbbe9e3d2e921
-
 Output: common/qrisc_isa_tables.py
 """
 

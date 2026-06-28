@@ -1,20 +1,14 @@
-"""
-qrisc_zap_loader.py -- IDA Pro loader for Adreno ZAP shader firmware.
+"""IDA loader for Adreno ZAP shader firmware.
 
-ZAP firmware ("*_zap.mdt" + "*_zap.bNN", or a single "*.mbn") is a Qualcomm
-PIL/MDT signed split-binary whose payload is afuc/QRisc instructions plus an
-embedded ir3 shader, with NO packet table (unlike the SQE microcode). This
-loader parses the PIL container (via common/qrisc_pil.py), maps the afuc/QRisc
-code segment for the custom "QRisc" processor module using the instruction-base
-0x1000 convention, and creates a separate, clearly-annotated segment for the
-embedded ir3 region so it is not mis-decoded as afuc.
+ZAP (*_zap.mdt + *_zap.bNN, or *.mbn) is a Qualcomm PIL/MDT signed split-
+binary; payload is afuc/QRisc plus an embedded ir3 shader, no packet table.
+Parses the PIL container (common/qrisc_pil.py), maps the afuc/QRisc code
+segment for the QRisc processor module at instruction base 0x1000, and
+maps the embedded ir3 region as separate annotated DATA so it isn't mis-
+decoded.
 
-Install: copy this file into <IDA>/loaders/ and copy common/qrisc_pil.py where
-it is importable (e.g. alongside, or onto sys.path). Open a *_zap.mdt or .mbn.
-
-NOTE: signature/hash verification is intentionally NOT performed -- this is for
-static analysis only. The afuc-vs-ir3 boundary is best-effort (see qrisc_pil
-.identify_payload); refine it interactively with the QRisc disassembler.
+Use ida/install.sh to install. Signature verification is not performed.
+The afuc-vs-ir3 boundary is best-effort; refine interactively.
 """
 
 import os

@@ -1,23 +1,15 @@
-"""
-a8xx (Adreno 8xx) CP microcode smoke test.
+"""a8xx CP microcode smoke test.
 
-BEST-EFFORT, NO ORACLE. Mesa's QRisc/afuc tooling has no gen-8 gate and its
-decoder rejects the a8xx fw_id, so there is no reference disassembler. a8xx
-reuses the a7xx QRisc CP ISA (no new core), so we decode it as a7xx
-(`Decoder(7)`) -- the only available approach (see common/qrisc_disasm.py and
-docs/a8xx_report.md).
+No oracle: Mesa's tooling has no gen-8 gate. a8xx reuses the a7xx QRisc
+ISA, so we decode it as a7xx (`Decoder(7)`). See docs/a8xx_report.md.
 
-This test SKIPS gracefully when the firmware blob is absent: the a8xx blobs are
-gitignored (downloaded into fixtures/ separately), so CI without the blob simply
-skips. When a blob IS present it asserts:
-  * the container parses,
-  * gen is None (a8xx fw_id is not in the gen map -- expected),
-  * decode coverage (% of words decoding to a known a7xx leaf) exceeds a
-    conservative documented threshold.
+Skips when the firmware blob is absent (gitignored; not in CI). When
+present it asserts the container parses, gen is None (a8xx fw_id isn't in
+the gen map), and decode coverage exceeds the documented threshold.
 
-The observed coverage at authoring time was ~93.4-94.1% (vs ~93.5% for the
-oracle-validated a730_sqe.fw reference); the threshold is set conservatively to
-90% so the test is robust to minor firmware-revision drift.
+Observed coverage at authoring time: ~93.4-94.1% (vs ~93.5% for the
+oracle-validated a730_sqe.fw). Threshold is 90% so the test is robust to
+minor firmware-revision drift.
 """
 import os
 import sys

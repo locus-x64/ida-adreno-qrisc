@@ -1,35 +1,27 @@
-"""
-qrisc_pil.py -- standalone Qualcomm PIL / MDT (split-binary) parser.
+"""Qualcomm PIL / MDT (split-binary) parser. Stdlib only.
 
-Adreno ZAP shaders ("*_zap.mdt" + "*_zap.bNN", or a single "*.mbn") ship as
-Qualcomm "Peripheral Image Loader" (PIL) signed split-binaries:
+Adreno ZAP shaders ship as PIL signed split-binaries:
 
     <name>.mdt  = ELF header + program-header table + metadata/hash/signature
-    <name>.bNN  = the payload of program-header index NN (split form)
+    <name>.bNN  = payload of program-header index NN (split form)
     <name>.mbn  = everything concatenated in one file (combined form)
 
-The ZAP payload itself is afuc/QRisc instructions plus an embedded ir3 shader,
-with NO packet table (unlike the SQE microcode).
+The payload is afuc/QRisc instructions plus an embedded ir3 shader, no
+packet table. This module parses the container; it does not verify
+signatures.
 
-This module is dependency-free (stdlib only) so it can be reused both by the IDA
-loader and by offline tooling/tests. It does NOT verify signatures -- it only
-parses the container so the afuc/ir3 payload can be extracted and disassembled.
-
-Field semantics follow the Linux kernel drivers/soc/qcom/mdt_loader.c:
+Field semantics follow drivers/soc/qcom/mdt_loader.c:
     QCOM_MDT_TYPE_MASK    = 0x07000000   (bits 24..26 of p_flags)
     QCOM_MDT_TYPE_HASH    = 0x02000000
     QCOM_MDT_RELOCATABLE  = 0x08000000   (BIT(27))
 
-  mdt_phdr_loadable(phdr):
-      p_type == PT_LOAD  and
-      (p_flags & TYPE_MASK) != TYPE_HASH  and
-      p_memsz != 0
+  mdt_phdr_loadable(phdr) iff
+      p_type == PT_LOAD and (p_flags & TYPE_MASK) != TYPE_HASH and p_memsz != 0
 
-  - program header index 0 is required to be non-PT_LOAD (it holds the ELF
-    header + phdrs, i.e. the "metadata" segment).
-  - the hash segment is the first index >= 1 whose type bits == TYPE_HASH.
-  - split payload file name: replace the last 3 chars of the .mdt name with
-    "b%02d" % index  (e.g. a530_zap.mdt -> a530_zap.b02).
+  - phdr index 0 must be non-PT_LOAD (ELF header + phdrs).
+  - hash segment is the first index >= 1 with type bits == TYPE_HASH.
+  - split payload filename: replace last 3 chars of the .mdt name with
+    "b%02d" % index (a530_zap.mdt -> a530_zap.b02).
 """
 
 import os

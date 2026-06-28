@@ -1,22 +1,17 @@
-"""
-qrisc_gmu_loader.py -- IDA Pro loader for Adreno GMU firmware ("*_gmu.bin").
+"""IDA loader for Adreno GMU firmware (*_gmu.bin).
 
-The GMU (Graphics Management Unit) is a SEPARATE micro-controller from the
-command processor: an ARM Cortex-M3 class core (ARMv7-M, Thumb). It is NOT afuc
-/QRisc -- do not use the QRisc processor module on it. This loader routes the
-image to IDA's stock ARM processor in Thumb mode with Cortex-M defaults.
+The GMU is a separate micro-controller: an ARM Cortex-M3 / ARMv7-M Thumb
+core, not afuc/QRisc. Routes the image to IDA's stock ARM in Thumb mode.
 
-The newer a6xx/a7xx/a8xx "*_gmu.bin" images use a simple block container:
+a6xx/a7xx/a8xx "*_gmu.bin" uses a block container:
 
     struct block { u32 addr; u32 size; u32 type; u32 value; u8 data[size]; }
 
-repeated to EOF (mirrors the kernel a6xx_gmu_fw_load loop). Each block targets a
-memory region (e.g. ITCM/DTCM) at `addr`. This loader best-effort parses that
-container and maps one IDA segment per block at its `addr`; if the data does not
-look like the block container it falls back to a single flat Thumb segment at 0.
+repeated to EOF (mirrors the kernel a6xx_gmu_fw_load loop). One segment
+per block at its `addr`; on parse failure, a flat Thumb segment at 0.
 
-Install: copy into <IDA>/loaders/ and open a *_gmu.bin file. If IDA does not
-auto-select the Cortex-M variant, set it via Options > General > Processor (ARMv7-M).
+If IDA doesn't auto-select Cortex-M, set ARMv7-M under
+Options -> General -> Processor.
 """
 
 import os

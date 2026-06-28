@@ -1,22 +1,14 @@
-"""
-qrisc.py -- IDA Pro processor module for the Adreno command-processor
-microcode ISA ("afuc" / "QRisc"), generations a6xx / a7xx (a8xx best-effort
-via the a7xx tables).
+"""IDA Pro processor module for Adreno CP microcode (afuc/QRisc).
 
-Pure IDAPython, targeting IDA 9.x. Decoding/rendering is delegated to the
-shared, oracle-validated core in ../../common (qrisc_disasm + qrisc_isa_tables),
-so this module never duplicates ISA knowledge -- it only adapts that core to
-IDA's processor_t contract (ana / emu / out).
+Pure IDAPython, IDA 9.x. Covers a6xx and a7xx; a8xx is decoded best-effort
+via the a7xx tables. Decoding is delegated to ../../common (qrisc_disasm +
+qrisc_isa_tables); this file adapts that to IDA's processor_t (ana/emu/out).
 
-Install: copy this file (and the `common/` directory, or keep the relative
-layout) into IDA's `procs/` directory, or load via idapython. The loader
-(ida/loaders/qrisc_loader.py) stores the GPU generation in a netnode; absent
-that, we default to gen 7.
+The loader (ida/loaders/qrisc_loader.py) stores the GPU generation in a
+netnode. Without that, defaults to gen 7. Use ida/install.sh to install.
 
-What's validated without IDA: the pure helpers below (itype table, flow
-derivation, target computation) are unit-tested in tests/test_proc.py against
-the shared decoder. The processor_t integration (ana/emu/out wiring) requires
-IDA to verify end-to-end.
+The pure helpers (itype table, flow derivation, target computation) are
+unit-tested in tests/test_proc.py. The live processor_t wiring requires IDA.
 """
 
 import os

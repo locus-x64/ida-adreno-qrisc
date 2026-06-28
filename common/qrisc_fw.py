@@ -1,31 +1,12 @@
-"""
-qrisc_fw.py -- QRisc/afuc firmware container parsing (shared, dependency-free).
+"""QRisc/afuc firmware container parsing. Stdlib only.
 
-Used by BOTH the IDA loader and the Ghidra loader (the "specify once, implement
-twice" seam from the plan). Pure stdlib; no IDA / Ghidra / Mesa imports.
-
-Container facts (authoritative, from Mesa qrisc/disasm.c main()):
-  * The .fw file is a little-endian array of uint32 words.
-  * disasm.c reads version = buf[1], instrs = &buf[1], sizedwords = nwords-1.
-    i.e. **file word 0 is a skipped header dword; word 1 is the version NOP and
-    the first instruction.**
-  * fw_id = (version_word >> 12) & 0xfff  (selects the GPU generation/decoder).
-  * KGSL on-device blobs carry ONE EXTRA leading dword vs linux-firmware
-    (kernel comment: "compared to kgsl, we've already stripped off the first
-    dword"). We detect this by locating the leading word whose fw_id is known.
-  * The packet/jump table offset is hinted by instrs[1] & 0xffff (== word2 of
-    the file). The table has ~0x80 entries (one per CP opcode); each entry is a
-    handler instruction index. (Accurate for the legacy/static path; a6xx+ also
-    expose it this way -- see find_jump_table in disasm.c.)
-  * a7xx/a8xx bundle BR + BV (+ LPAC) sub-images in one _sqe.fw. Their offsets
-    are NOT in a static header: they come from BV_INSTR_BASE/LPAC_INSTR_BASE
-    which the bootstrap routine programs via cwrite. Accurate splitting requires
-    running the bootstrap (see qrisc_bootstrap.py, Stage 3). split_subimages()
-    here returns a single image unless offsets are supplied.
-
-Instruction memory base: 0x1000 is the conventional SQE instruction-memory base
-used for segment placement / label resolution (1 word == 4 bytes in IDA's byte
-addressing).
+Mirrors Mesa qrisc/disasm.c: word 0 is a skipped header dword, word 1 is the
+version NOP / first instruction, fw_id = (word1 >> 12) & 0xfff. KGSL blobs
+have one extra leading dword vs linux-firmware; we detect that by looking
+for the leading word whose fw_id is known. a7xx/a8xx bundle BR+BV(+LPAC) in
+one _sqe.fw; BV/LPAC offsets aren't in a static header (the bootstrap
+routine programs them via cwrite), so split_subimages() returns a single
+image unless offsets are supplied. Instruction memory base is 0x1000.
 """
 
 import struct

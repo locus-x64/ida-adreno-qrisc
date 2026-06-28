@@ -1,28 +1,24 @@
-"""
-qrisc_bootstrap.py -- packet jump-table recovery and BR/BV/LPAC sub-image
-boundary extraction for QRisc/afuc firmware.
+"""Packet jump-table recovery and BR/BV/LPAC boundary extraction.
 
-Two services, both consumed by the IDA loader (Stage 3) and the processor
-module's xref pass. Each is now **emulator-backed** (accurate on real blobs)
-with a static-heuristic fallback when emulation can't complete:
+Two services, both emulator-backed on real blobs with a static-heuristic
+fallback when emulation can't complete:
 
 1. recover_packet_table(words, gen) -> list of handler entries
-   The CP's core loop parses each PM4 packet header and dispatches via a jump
-   table. PRIMARY path: run the firmware bootstrap (qrisc_emu) so it populates
-   the 0x80-entry table via @PACKET_TABLE_WRITE exactly as the hardware does,
-   then locate that table in the image (Mesa find_jump_table). FALLBACK: the
-   static `instrs[1] & 0xffff` hint -- but that hint is a *size word* on real
-   a6xx+ images, so it is reliable only for the small Mesa fixtures.
+   Primary: run the firmware bootstrap (qrisc_emu) so it populates the 0x80
+   table via @PACKET_TABLE_WRITE, then locate that table in the image
+   (Mesa find_jump_table). Fallback: the static `instrs[1] & 0xffff` hint,
+   which is a *size word* on real a6xx+ images and only reliable for the
+   small Mesa fixtures.
 
 2. extract_instr_bases(words, gen) -> (bv_offset, lpac_offset)
-   PRIMARY: read @BV_INSTR_BASE / @LPAC_INSTR_BASE (a7xx/a8xx) or
-   CP_LPAC_SQE_INSTR_BASE (a6xx) after running bootstrap -- byte-exact, the same
-   computation Mesa's disasm uses. FALLBACK: a structural alignment heuristic.
+   Primary: read @BV_INSTR_BASE / @LPAC_INSTR_BASE (a7xx/a8xx) or
+   CP_LPAC_SQE_INSTR_BASE (a6xx) after bootstrap. Fallback: structural
+   alignment heuristic.
 
-VERIFIED: the emulator path recovers the table + BV/LPAC split on the real a730
-blob (where the static hint is wrong) and matches the static result on the Mesa
-fixtures. a8xx bootstrap diverges on a8xx-new encodings (greenfield) and falls
-back to the heuristic -- query recovery_method() to tell which path was used.
+The emulator path recovers the table + split on the real a730 blob (where
+the hint is wrong) and matches the static result on the Mesa fixtures.
+a8xx bootstrap diverges on a8xx-new encodings and falls back. Query
+recovery_method() to see which path was used.
 """
 
 try:

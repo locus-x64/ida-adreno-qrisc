@@ -1,30 +1,27 @@
-"""
-qrisc_emu.py -- a minimal QRisc/afuc bootstrap emulator.
+"""Minimal QRisc/afuc bootstrap emulator (port of Mesa qrisc/emu.c).
 
-Faithful (but bootstrap-focused) port of Mesa's qrisc/emu.c + emu-regs.c. Its
-job is to RUN the firmware bootstrap routine so we can recover, on REAL blobs:
-  * the packet jump table (0x80 CP-opcode handler indices), populated by the
-    firmware via @PACKET_TABLE_WRITE control-register writes, and
-  * the BR/BV/LPAC sub-image boundaries, from the @BV_INSTR_BASE /
-    @LPAC_INSTR_BASE / CP_LPAC_SQE_INSTR_BASE registers the bootstrap programs.
+Runs the firmware bootstrap so we can recover on real blobs:
+  * the packet jump table (0x80 handler indices), populated via
+    @PACKET_TABLE_WRITE
+  * the BR/BV/LPAC sub-image bases, from @BV_INSTR_BASE / @LPAC_INSTR_BASE /
+    CP_LPAC_SQE_INSTR_BASE
 
-Why an emulator: on real a6xx+ images `instrs[1] & 0xffff` is a size word, not
-the table pointer, and the BV/LPAC bases are computed at runtime relative to
-CP_SQE_INSTR_BASE. Mesa's disasm runs `emu_run_bootstrap()` for exactly this.
+On real a6xx+ images `instrs[1] & 0xffff` is a size word, not the table
+pointer, and BV/LPAC bases are computed at runtime relative to
+CP_SQE_INSTR_BASE. Mesa's disasm runs `emu_run_bootstrap()` for this.
 
-Dependencies: stdlib + the validated `qrisc_disasm.Decoder` (for decode) and
-`qrisc_isa_tables` (for control/sqe register offsets). No IDA/Ghidra/Mesa.
+Stdlib + qrisc_disasm.Decoder + qrisc_isa_tables. No IDA/Ghidra/Mesa.
 
-Scope/parity notes:
-  * GPU memory is modelled as a sparse {byte_addr: dword} dict (Mesa uses an 8GB
-    mmap); the firmware image is copied to EMU_INSTR_BASE (0x1000) like Mesa.
-  * CP_SQE_INSTR_BASE GPU offset moved on a8xx (0x830 a6xx/a7xx -> 0x816 a8xx);
-    we seed BOTH candidates to 0x1000 so the bootstrap's read returns 0x1000
-    regardless, and compute offsets as (INSTR_BASE_reg - 0x1000)//4.
-  * waitin ends the bootstrap (its dispatch/delay-slot don't run), matching Mesa.
-  * Unmodelled corners (draw-state regs, privileged mem hi) are inert for the
-    bootstrap path; on any decode/exec fault we raise EmuError so callers can
-    fall back to the static heuristic.
+Notes:
+  * GPU memory is a sparse {byte_addr: dword} dict; the image is copied to
+    EMU_INSTR_BASE (0x1000) like Mesa.
+  * CP_SQE_INSTR_BASE GPU offset moved on a8xx (0x830 a6xx/a7xx -> 0x816
+    a8xx); we seed both to 0x1000 and compute offsets as
+    (INSTR_BASE_reg - 0x1000)//4.
+  * waitin ends the bootstrap (its dispatch/delay slot don't run).
+  * Draw-state regs and privileged mem hi are inert on the bootstrap path;
+    decode/exec faults raise EmuError so callers can fall back to the
+    static heuristic.
 """
 
 try:

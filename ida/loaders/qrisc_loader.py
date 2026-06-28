@@ -1,32 +1,25 @@
-"""
-qrisc_loader.py -- IDA loader for Adreno QRisc/afuc command-processor microcode
-(SQE / PFP / PM4 .fw blobs), a6xx / a7xx / a8xx.
+"""IDA loader for Adreno QRisc CP microcode .fw blobs (a6xx/a7xx/a8xx).
 
-Drop into IDA's `loaders/` directory. Pairs with the `QRisc` processor module
-(Stage 2). Recognizes `*_sqe.fw`, `*_pfp.fw`, `*_pm4.fw`, `genNNNNN_sqe.fw` and
-the KGSL extra-leading-dword variant.
+Drop into IDA's loaders/ directory. Recognizes *_sqe.fw / *_pfp.fw /
+*_pm4.fw / genNNNNN_sqe.fw plus the KGSL extra-leading-dword variant.
 
-On load it:
-  * parses the container (qrisc_fw), splitting BR/BV/LPAC sub-images on a7xx/a8xx
-    (qrisc_bootstrap.extract_instr_bases -- best-effort, see that module),
-  * creates one CODE segment per sub-image, contiguously mapped from base 0x1000
-    (1 instruction word == 4 bytes); each image's base = 0x1000 + start*4,
-  * marks the embedded jump table as DATA,
-  * recovers the packet table and names each handler entry `CP_*` (qrisc_pm4),
-  * stashes the GPU generation + per-image bases in a netnode for the processor
-    module, and adds the reset/bootstrap entry point.
+On load: parses the container (qrisc_fw), splits BR/BV/LPAC sub-images on
+a7xx/a8xx, creates one CODE segment per sub-image at base 0x1000, marks the
+embedded jump table as DATA, recovers the packet table and names each
+handler CP_* (qrisc_pm4), stashes gen + per-image bases in a netnode for
+the processor module, and adds the bootstrap entry point.
 
-The IDA-independent decision logic (recognition, segment/packet plan) is factored
-into plain functions so it is unit-testable without IDA. All `ida_*`/`idaapi`
-imports are guarded.
+IDA-independent logic (recognition, segment/packet plan) is factored into
+plain functions so it's unit-testable without IDA; all idaapi/ida_* imports
+are guarded.
 
-Integration contract for the Stage-2 processor module:
-  * processor name:        PROC_NAME == "QRisc"
-  * netnode name:          NETNODE_NAME == "$ qrisc"
-  * gen altval key:        NN_GEN_KEY (altval) -> generation int (5..8)
-  * per-image base hashval: NN_IMAGE_HASH "<base_ea>" -> "<NAME>:<gen>"
-  The module resolves a branch/call target relative to the containing segment's
-  base (each sub-image's pc/literal is 0-based from its own INSTRUCTION_BASE).
+Processor-module contract:
+  PROC_NAME == "QRisc"
+  NETNODE_NAME == "$ qrisc"
+  altval(NN_GEN_KEY) = generation int (5..8)
+  per-image base hashval: NN_IMAGE_HASH "<base_ea>" -> "<NAME>:<gen>"
+Branch/call targets resolve relative to the containing segment's base
+(each sub-image's pc/literal is 0-based from its own INSTRUCTION_BASE).
 """
 
 import os

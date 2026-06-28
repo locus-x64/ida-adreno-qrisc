@@ -1,19 +1,16 @@
-"""
-qrisc_disasm.py -- standalone QRisc (afuc) decoder + renderer.
+"""Standalone QRisc (afuc) decoder + renderer.
 
-Consumes the generated tables in qrisc_isa_tables.py (no Mesa / no IDA / no
-Ghidra dependency). This is the shared core reused by:
-  * the Stage-1 oracle validation (tests/test_disasm.py),
-  * the IDA processor module's ev_ana_insn / ev_out_insn (Stage 2).
+Consumes the generated tables in qrisc_isa_tables.py. No Mesa / IDA /
+Ghidra dependency. Reused by tests/test_disasm.py (oracle diff) and the
+IDA processor module.
 
-Decoding model (mirrors Mesa isaspec):
-  * an instruction word matches a leaf when (word & leaf.mask) == leaf.match,
-    most-specific (largest mask popcount) wins, gated by GPU generation.
-  * operands render from the leaf's display template via {TOKEN} substitution,
-    with override cases chosen by evaluating their guard expression.
+Decoding (mirrors Mesa isaspec): a word matches a leaf when
+(word & leaf.mask) == leaf.match, most-specific (largest mask popcount)
+wins, gated by GPU generation. Operands render from the leaf's display
+template via {TOKEN} substitution; override cases are chosen by their
+guard expression.
 
-Generations: 6 (a6xx), 7 (a7xx). a8xx is decoded with the gen-7 tables
-(best-effort -- see Stage 5).
+Generations: 6 (a6xx), 7 (a7xx). a8xx uses the gen-7 tables (best-effort).
 """
 
 try:
