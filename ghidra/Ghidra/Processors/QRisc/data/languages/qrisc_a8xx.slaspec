@@ -1,0 +1,6 @@
+# Adreno a8xx command-processor microcode (afuc / QRisc).
+# BEST-EFFORT: a8xx uses the same QRisc ISA family as a7xx; Mesa's qrisc.xml has
+# no gen-8-specific encodings, so a8xx is decoded with the a7xx constructor set.
+# Any a8xx-only opcodes/control-regs must be reverse-engineered (see Stage 5).
+@include "qrisc.sinc"
+@include "qrisc_gen7.sinc"

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<processor_spec>
+  <programcounter register="pc"/>
+  <!-- Special queue/register pseudo-registers (offsets 0x80..0x97) are volatile
+       so the decompiler preserves FIFO reads / GPU-register writes. -->
+  <volatile outputop="write_volatile" inputop="read_volatile">
+    <range space="register" first="0x80" last="0x97"/>
+  </volatile>
+  <default_symbols>
+    <symbol name="reset" address="code:0x0" entry="true"/>
+  </default_symbols>
+</processor_spec>

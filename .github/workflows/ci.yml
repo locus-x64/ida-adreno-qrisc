@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pytest
+        run: python -m pip install --upgrade pytest
+      - name: Unit tests (oracle diff, container, pm4, pil, ...)
+        run: pytest
+      - name: Decoder oracle check
+        run: python3 tests/test_disasm.py
+
+  regen-check:
+    # Verifies the committed ISA tables still match a fresh generation from the
+    # pinned Mesa commit (catches accidental hand-edits / drift).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Sparse blobless clone of pinned Mesa
+        run: |
+          git clone --no-checkout --depth 1 --filter=blob:none \
+            https://gitlab.freedesktop.org/mesa/mesa.git third_party/mesa
+          M=third_party/mesa
+          git -C "$M" sparse-checkout set src/freedreno src/compiler/isaspec
+          git -C "$M" checkout
+          test "$(git -C "$M" rev-parse HEAD)" = "4bf8fd5121122abd87aafb31e43bbbe9e3d2e921" \
+            || echo "::warning::Mesa HEAD differs from pinned commit; tables may need regen"
+      - name: Regenerate and diff
+        run: |
+          python3 gen/qrisc_isa_gen.py
+          git diff --exit-code common/qrisc_isa_tables.py \
+            || (echo "::error::common/qrisc_isa_tables.py is stale; run gen/qrisc_isa_gen.py" && exit 1)

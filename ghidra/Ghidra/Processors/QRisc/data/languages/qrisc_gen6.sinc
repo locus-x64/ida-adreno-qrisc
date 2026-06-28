@@ -1,0 +1,204 @@
+# AUTO-GENERATED instruction constructors -- do not edit.
+
+:cmp d11, s21, s16 is op0_4=0x10 & op27_31=0x13 & d11 & s21 & s16 {
+    d11 = qrisc_cmp(s21, s16);
+}
+:ishr d11, s21, s16 is op0_4=0xb & op27_31=0x13 & d11 & s21 & s16 {
+    d11 = s21 s>> s16;
+}
+:max d11, s21, s16 is op0_4=0xf & op27_31=0x13 & d11 & s21 & s16 {
+    d11 = qrisc_max(s21, s16);
+}
+:min d11, s21, s16 is op0_4=0xe & op27_31=0x13 & d11 & s21 & s16 {
+    d11 = qrisc_min(s21, s16);
+}
+:msb d11, s16 is op0_4=0x14 & op27_31=0x13 & d11 & s16 {
+    d11 = qrisc_msb(s16);
+}
+:mul8 d11, s21, s16 is op0_4=0xd & op27_31=0x13 & d11 & s21 & s16 {
+    d11 = qrisc_mul8(s21, s16);
+}
+:rot d11, s21, s16 is op0_4=0xc & op27_31=0x13 & d11 & s21 & s16 {
+    d11 = qrisc_rotl(s21, s16);
+}
+:shl d11, s21, s16 is op0_4=0x9 & op27_31=0x13 & d11 & s21 & s16 {
+    d11 = s21 << s16;
+}
+:ushr d11, s21, s16 is op0_4=0xa & op27_31=0x13 & d11 & s21 & s16 {
+    d11 = s21 >> s16;
+}
+:clrbit d16, s21, bit_1_5 is op0_0=0x0 & op27_31=0x12 & d16 & s21 & bit_1_5 {
+    local b:4 = bit_1_5;
+    d16 = s21 & ~(1:4 << b);
+}
+:setbit d16, s21, bit_1_5 is op0_0=0x1 & op27_31=0x12 & d16 & s21 & bit_1_5 {
+    local b:4 = bit_1_5;
+    d16 = s21 | (1:4 << b);
+}
+:cmp d16, s21, imm_0_15 is op27_31=0x10 & d16 & s21 & imm_0_15 {
+    local i:4 = imm_0_15;
+    d16 = qrisc_cmp(s21, i);
+}
+:ishr d16, s21, imm_0_15 is op27_31=0xb & d16 & s21 & imm_0_15 {
+    local i:4 = imm_0_15;
+    d16 = s21 s>> i;
+}
+:max d16, s21, imm_0_15 is op27_31=0xf & d16 & s21 & imm_0_15 {
+    local i:4 = imm_0_15;
+    d16 = qrisc_max(s21, i);
+}
+:min d16, s21, imm_0_15 is op27_31=0xe & d16 & s21 & imm_0_15 {
+    local i:4 = imm_0_15;
+    d16 = qrisc_min(s21, i);
+}
+:mov d16, imm_0_15, sh5 is op27_31=0x11 & d16 & imm_0_15 & sh5 {
+    local i:4 = imm_0_15;
+    local sh:4 = sh5;
+    d16 = i << sh;
+}
+:mul8 d16, s21, imm_0_15 is op27_31=0xd & d16 & s21 & imm_0_15 {
+    local i:4 = imm_0_15;
+    d16 = qrisc_mul8(s21, i);
+}
+:rot d16, s21, imm_0_15 is op27_31=0xc & d16 & s21 & imm_0_15 {
+    local i:4 = imm_0_15;
+    d16 = qrisc_rotl(s21, i);
+}
+:shl d16, s21, imm_0_15 is op27_31=0x9 & d16 & s21 & imm_0_15 {
+    local i:4 = imm_0_15;
+    d16 = s21 << i;
+}
+:ushr d16, s21, imm_0_15 is op27_31=0xa & d16 & s21 & imm_0_15 {
+    local i:4 = imm_0_15;
+    d16 = s21 >> i;
+}
+:add d11, s21, s16 is op0_4=0x1 & op27_31=0x13 & d11 & s21 & s16 {
+    d11 = s21 + s16;
+}
+:addhi d11, s21, s16 is op0_4=0x2 & op27_31=0x13 & d11 & s21 & s16 {
+    d11 = qrisc_addhi(s21, s16);
+}
+:and d11, s21, s16 is op0_4=0x5 & op27_31=0x13 & d11 & s21 & s16 {
+    d11 = s21 & s16;
+}
+:not d11, s16 is op0_4=0x8 & op27_31=0x13 & d11 & s16 {
+    d11 = ~s16;
+}
+:or d11, s21, s16 is op0_4=0x6 & op27_31=0x13 & d11 & s21 & s16 {
+    d11 = s21 | s16;
+}
+:sub d11, s21, s16 is op0_4=0x3 & op27_31=0x13 & d11 & s21 & s16 {
+    d11 = s21 - s16;
+}
+:subhi d11, s21, s16 is op0_4=0x4 & op27_31=0x13 & d11 & s21 & s16 {
+    d11 = qrisc_subhi(s21, s16);
+}
+:xor d11, s21, s16 is op0_4=0x7 & op27_31=0x13 & d11 & s21 & s16 {
+    d11 = s21 ^ s16;
+}
+:iret is op25_31=0x69 {
+    local ra:4 = *[hwstack]:4 csp;
+    csp = csp + 4;
+    delayslot(1);
+    return [ra];
+}
+:ret is op25_31=0x68 {
+    local ra:4 = *[hwstack]:4 csp;
+    csp = csp + 4;
+    delayslot(1);
+    return [ra];
+}
+:bl abs is op26_31=0x38 & abs {
+    lr = (inst_start >> 2) + 2;
+    delayslot(1);
+    call abs;
+}
+:breq s21, bit5b, rel is op26_31=0x33 & s21 & bit5b & rel {
+    delayslot(1);
+    if (((s21 >> bit5b) & 1) != 0) goto rel;
+}
+:breq s21, imm5, rel is op26_31=0x31 & s21 & imm5 & rel {
+    delayslot(1);
+    if (s21 == imm5) goto rel;
+}
+:jump rel is op26_31=0x32 & s21=0 & bit5b=0 & rel {
+    delayslot(1);
+    goto rel;
+}
+:brne s21, bit5b, rel is op26_31=0x32 & s21 & bit5b & rel {
+    delayslot(1);
+    if (((s21 >> bit5b) & 1) == 0) goto rel;
+}
+:brne s21, imm5, rel is op26_31=0x30 & s21 & imm5 & rel {
+    delayslot(1);
+    if (s21 != imm5) goto rel;
+}
+:call abs is op26_31=0x35 & abs {
+    local ra:4 = inst_start + 8;
+    csp = csp - 4;
+    *[hwstack]:4 csp = ra;
+    delayslot(1);
+    call abs;
+}
+:setsecure is op26_31=0x3b {
+    qrisc_setsecure();
+}
+:waitin is op26_31=0x36 {
+    delayslot(1);
+    local h:4 = qrisc_waitin();
+    goto [h];
+}
+:addhi d16, s21, imm_0_15 is op27_31=0x2 & d16 & s21 & imm_0_15 {
+    local i:4 = imm_0_15;
+    d16 = qrisc_addhi(s21, i);
+}
+:add d16, s21, imm_0_15 is op27_31=0x1 & d16 & s21 & imm_0_15 {
+    local i:4 = imm_0_15;
+    d16 = s21 + i;
+}
+:and d16, s21, imm_0_15 is op27_31=0x5 & d16 & s21 & imm_0_15 {
+    local i:4 = imm_0_15;
+    d16 = s21 & i;
+}
+:not d16, imm_0_15 is op27_31=0x8 & d16 & imm_0_15 {
+    local i:4 = imm_0_15;
+    d16 = ~i;
+}
+:or d16, s21, imm_0_15 is op27_31=0x6 & d16 & s21 & imm_0_15 {
+    local i:4 = imm_0_15;
+    d16 = s21 | i;
+}
+:subhi d16, s21, imm_0_15 is op27_31=0x4 & d16 & s21 & imm_0_15 {
+    local i:4 = imm_0_15;
+    d16 = qrisc_subhi(s21, i);
+}
+:sub d16, s21, imm_0_15 is op27_31=0x3 & d16 & s21 & imm_0_15 {
+    local i:4 = imm_0_15;
+    d16 = s21 - i;
+}
+:xor d16, s21, imm_0_15 is op27_31=0x7 & d16 & s21 & imm_0_15 {
+    local i:4 = imm_0_15;
+    d16 = s21 ^ i;
+}
+:nop is op0_25=0x1000000 & op27_31=0x0 {
+    nop_dummy:1 = 0:1;
+}
+:cread d16, [s21 + base12]preinc is op12_13=0x0 & op15_15=0x0 & op27_31=0x17 & d16 & s21 & base12 & preinc {
+    d16 = qrisc_creg_read(s21 + base12);
+}
+:load d16, [s21 + base12]preinc is op12_13=0x0 & op15_15=0x0 & op27_31=0x16 & d16 & s21 & base12 & preinc {
+    d16 = qrisc_load(s21 + base12);
+}
+:sread d16, [s21 + base12]preinc is op12_13=0x0 & op15_15=0x1 & op27_31=0x17 & d16 & s21 & base12 & preinc {
+    d16 = qrisc_sreg_read(s21 + base12);
+}
+:store s16, [s21 + base12]preinc is op12_13=0x0 & op15_15=0x0 & op27_31=0x14 & s16 & s21 & base12 & preinc {
+    qrisc_store(s21 + base12, s16);
+}
+:swrite s16, [s21 + base12]preinc is op12_13=0x0 & op15_15=0x1 & op27_31=0x15 & s16 & s21 & base12 & preinc {
+    qrisc_sreg_write(s21 + base12, s16);
+}
+:cwrite s16, [s21 + base12]preinc is op15_15=0x0 & op27_31=0x15 & s16 & s21 & base12 & preinc {
+    local idx:4 = s21 + base12;
+    qrisc_creg_write(idx, s16);
+}

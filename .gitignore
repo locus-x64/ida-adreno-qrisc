@@ -1,0 +1,36 @@
+# Mesa source tree (pinned via the regen workflow; not redistributed here)
+third_party/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+build/
+dist/
+*.egg-info/
+
+# IDA databases / aux files
+*.i64
+*.idb
+*.id0
+*.id1
+*.nam
+*.til
+*.id2
+
+# Firmware: ship ONLY the license-clean Mesa test fixtures.
+# Everything else (real Qualcomm blobs) is gitignored on purpose.
+fixtures/*
+!fixtures/qrisc_test*.fw
+!fixtures/qrisc_test*.asm
+!fixtures/README.md
+
+# Ghidra validation download (the local sleigh compiler tree, ~1.5 GB)
+ghidra/.tools/
+
+# OS junk
+.DS_Store
+Thumbs.db
+*~
+.claude/

@@ -1,0 +1,20 @@
+ida-adreno-qrisc is maintained by the adreno-qrisc contributors.
+
+Upstream attribution
+====================
+
+The ISA, PM4 packet definitions, control-register layout, and reference
+disassembler this project validates against were authored by the freedreno
+contributors to Mesa 3D — in particular the qrisc/afuc subsystem, originally
+by Rob Clark (Red Hat / Google), with substantial later work by Connor Abbott
+(Valve) and other Mesa contributors. See:
+
+  https://gitlab.freedesktop.org/mesa/mesa/-/tree/main/src/freedreno/qrisc
+
+Mesa is MIT-licensed; copyright remains with the respective Mesa authors.
+See NOTICE.
+
+Project contributors
+====================
+
+(Add yourself here when you contribute. Alphabetical by handle / name.)

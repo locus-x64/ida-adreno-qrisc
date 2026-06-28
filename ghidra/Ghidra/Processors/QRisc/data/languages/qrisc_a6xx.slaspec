@@ -1,0 +1,3 @@
+# Adreno a6xx command-processor microcode (afuc / QRisc, unified SQE).
+@include "qrisc.sinc"
+@include "qrisc_gen6.sinc"

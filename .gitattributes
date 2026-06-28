@@ -1,0 +1,12 @@
+# Force LF line endings for source — keeps cross-platform diffs sane.
+* text=auto eol=lf
+
+# Binary fixtures
+*.fw    binary
+*.bin   binary
+*.mdt   binary
+*.mbn   binary
+
+# Generated; don't try to merge these
+common/qrisc_isa_tables.py  -merge
+ghidra/Ghidra/Processors/QRisc/data/languages/*.sla  -text -diff
