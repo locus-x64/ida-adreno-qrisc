@@ -8,8 +8,14 @@ sys.path.insert(0, os.path.join(ROOT, "common"))
 import qrisc_pm4  # noqa: E402
 
 
+# Use the public db() accessor: it prefers the baked PM4_PACKETS table from
+# qrisc_isa_tables (always shipped) and only falls back to parsing Mesa's
+# adreno_pm4.xml when the table is missing. The IDA/Ghidra runtime uses db(),
+# not load(), so this is what we actually want to test in CI.
+
+
 def test_known_opcodes():
-    db = qrisc_pm4.load()
+    db = qrisc_pm4.db()
     assert db.packet_name(0x48, 6) == "CP_ME_INIT"
     assert db.packet_name(0x3d, 6) == "CP_MEM_WRITE"
     assert db.packet_name(0x3f, 6) == "CP_INDIRECT_BUFFER"
@@ -18,7 +24,7 @@ def test_known_opcodes():
 
 
 def test_a8xx_gating():
-    db = qrisc_pm4.load()
+    db = qrisc_pm4.db()
     # CP_BARRIER (0x59) and CP_MEMORY_MAP_UPDATE (0x58) are A8XX-only.
     assert db.packet_name(0x59, 8) == "CP_BARRIER"
     assert db.packet_name(0x58, 8) == "CP_MEMORY_MAP_UPDATE"
@@ -35,7 +41,7 @@ def test_variant_parser():
 
 
 def test_map_for_gen():
-    db = qrisc_pm4.load()
+    db = qrisc_pm4.db()
     m6 = db.map_for_gen(6)
     m8 = db.map_for_gen(8)
     assert m6.get(0x48) == "CP_ME_INIT"
